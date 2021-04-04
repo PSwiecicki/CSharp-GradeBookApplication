@@ -41,6 +41,10 @@ namespace GradeBook.GradeBooks
                     grade = 'D';
                 }
             }
+            else
+            {
+                throw new InvalidOperationException();
+            }
             return grade;
 
         }
