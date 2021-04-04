@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace GradeBook.GradeBooks
@@ -13,40 +14,22 @@ namespace GradeBook.GradeBooks
 
         public override char GetLetterGrade(double averageGrade)
         {
-            char grade = 'F';
+            if(Students.Count < 5)
+                throw new InvalidOperationException("Ranked-grading requires a minimum of 5 students to work.");
 
-            if (Students.Count > 5)
-            {
-                int place = Students.Count;
-                foreach(var student in Students)
-                {
-                    if (averageGrade > student.AverageGrade)
-                        place--;
-                }
-                double d = place / Students.Count;
-                if(d < 0.2)
-                {
-                    grade = 'A';
-                }
-                else if(d < 0.4)
-                {
-                    grade = 'B';
-                }
-                else if (d < 0.6)
-                {
-                    grade = 'C';
-                }
-                else if (d < 0.8)
-                {
-                    grade = 'D';
-                }
-            }
-            else
-            {
-                throw new InvalidOperationException();
-            }
-            return grade;
+            var threshold = (int)(Students.Count * 0.2);
+            List<double> grades = Students.Select(s => s.AverageGrade).OrderBy(x => x).ToList<double>();
 
+            if (averageGrade > grades[threshold * 4 - 1])
+                return 'A';
+            if (averageGrade > grades[threshold * 3 - 1])
+                return 'B';
+            if (averageGrade > grades[threshold * 2 - 1])
+                return 'C';
+            if (averageGrade > grades[threshold - 1])
+                return 'D';
+
+            return 'F';
         }
     }
 }
